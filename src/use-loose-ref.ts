@@ -14,7 +14,7 @@ export interface MutableLooseRefObject<T> extends MutableRefObject<T> {
  * const authRef = useLooseRef(0);
  * authRef.refresh();
  */
-export default function useLooseRef<T>(initialValue: T): MutableLooseRefObject<T> {
+export function useLooseRef<T>(initialValue: T): MutableLooseRefObject<T> {
 	const [ref, setRef] = useState<MutableLooseRefObject<T>>({
 		current: initialValue,
 		refresh: null!
@@ -37,3 +37,5 @@ export default function useLooseRef<T>(initialValue: T): MutableLooseRefObject<T
 
 	return ref;
 }
+
+export default useLooseRef;
