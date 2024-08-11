@@ -1,28 +1,30 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-let lastTime = 0;
-let lastHash = 1;
+let prevTime = 0;
+let prevIndex = 1;
 
 /**
  * Produce a random unique id
  * 
  * Creating two at once will always be incremental
  */
-export function makeUniqId(): string {
+export function makeUniqId(preface = ''): string {
 	const now = Date.now();
+	let index = Math.floor(Math.random() * 1e12);
 
 	// Ensure unique value is incrementing
-	let hash = Math.floor(Math.random() * 1e12);
-	if (lastTime === now) {
-		hash = lastHash + 1;
+	if (prevTime < now) {
+		prevTime = now;
+	} else {
+		index = prevIndex + 1;
 	}
 
-	lastTime = now;
-	lastHash = hash;
+	prevIndex = index;
 
 	return [
-		now.toString(36),
-		hash.toString(36).padStart(8, '0'),
+		preface,
+		prevTime.toString(36),
+		index.toString(36).padStart(8, '0'),
 	].join('');
 }
 
@@ -33,8 +35,14 @@ export function makeUniqId(): string {
  * @example
  * const id = useUniqId();
  */
-export function useUniqId(): string {
-	const [id] = useState(() => makeUniqId());
+export function useUniqId(preface = ''): string {
+	const [id, setId] = useState(() => makeUniqId(preface));
+
+	// Update id only if preface changes
+	useEffect(() => () => {
+		setId(makeUniqId(preface))
+	}, [preface]);
+
 	return id;
 }
 
